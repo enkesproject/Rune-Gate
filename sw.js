@@ -2,7 +2,7 @@
    Rune Gate — Service Worker
    Ubah CACHE_NAME (v2, v3, ...) setiap update game.
 ===================================================== */
-const CACHE_NAME = 'rune-gate-v3';
+const CACHE_NAME = 'rune-gate-v4';
 
 const PRECACHE = [
   './',
