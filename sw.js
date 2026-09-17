@@ -1,4 +1,4 @@
-const CACHE_NAME = 'rune-gate-v5';
+const CACHE_NAME = 'rune-gate-v6';
 
 const PRECACHE = [
   './',
