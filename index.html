@@ -5,10 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#0B0906">
 <title>Rune Gate — Match-3 & Auto Battle</title>
-<!-- ===== PWA ===== -->
+<!-- ===== PWA (ikon JPG buatanmu: icon.jpg, persegi, di folder yang sama) ===== -->
 <link rel="manifest" href="manifest.json">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" type="image/jpeg" href="icon.jpg">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -323,6 +322,7 @@ h1 em{font-style:normal; color:var(--amber)}
 <p id="caption">Shatter candy runes → score becomes war power → a new land every level.</p>
 
 <script>
+/* ===== PWA: registrasi Service Worker ===== */
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./sw.js')
