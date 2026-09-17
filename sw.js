@@ -1,27 +1,16 @@
 /* =====================================================
    Rune Gate — Service Worker
-   - Pre-cache app shell (HTML, manifest, ikon)
-   - Cache-first untuk aset lokal (ikon, dll.)
-   - Network-first dengan fallback cache untuk file audio
-     Cloudinary (biar offline tetap bersuara setelah online)
-   - CDN font (Google Fonts) di-cache saat pertama dipakai
-   Nama cache naikkan (v2, v3, ...) setiap kamu update game
-   agar pengguna lama otomatis dapat versi baru.
+   Ubah CACHE_NAME (v2, v3, ...) setiap update game.
 ===================================================== */
-const CACHE_NAME = 'rune-gate-v1';
+const CACHE_NAME = 'rune-gate-v2';
 
-/* Apat yang selalu di-cache saat install */
 const PRECACHE = [
   './',
   './index.html',
   './manifest.json',
-  './icon-192.png',
-  './icon-512.png',
-  './icon-512-maskable.png'
+  './icon.jpg'
 ];
 
-/* File audio Cloudinary — di-cache "lazy" saat online,
-   lalu tersedia offline */
 const AUDIO_URLS = [
   'https://res.cloudinary.com/sogbouii/video/upload/v1789578621/dragon-studio-gunshot-511311.mp3',
   'https://res.cloudinary.com/sogbouii/video/upload/v1789578621/glass-breaking-sound-effect_wLZSIYn.mp3',
@@ -35,7 +24,6 @@ const AUDIO_URLS = [
   'https://res.cloudinary.com/sogbouii/video/upload/v1789582560/Medan_Perang.mp3'
 ];
 
-/* ---------- INSTALL: pre-cache app shell ---------- */
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
@@ -44,37 +32,29 @@ self.addEventListener('install', (event) => {
   );
 });
 
-/* ---------- ACTIVATE: bersihkan cache versi lama ---------- */
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys()
       .then((keys) => Promise.all(
-        keys
-          .filter((k) => k !== CACHE_NAME)
-          .map((k) => caches.delete(k))
+        keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k))
       ))
       .then(() => self.clients.claim())
   );
 });
 
-/* ---------- HELPER ---------- */
 function isAudio(url) {
   return AUDIO_URLS.some((a) => url.href === a) ||
          /cloudinary\.com\/sogbouii\/video\/upload\//.test(url.href);
 }
-
 function isFont(url) {
   return /fonts\.(googleapis|gstatic)\.com/.test(url.href);
 }
 
-/* ---------- FETCH ---------- */
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
-
   const url = new URL(req.url);
 
-  // Navigasi halaman: network-first, fallback ke shell cache (offline)
   if (req.mode === 'navigate') {
     event.respondWith(
       fetch(req)
@@ -90,7 +70,6 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Audio Cloudinary: cache-first setelah pernah diunduh
   if (isAudio(url)) {
     event.respondWith(
       caches.match(req).then((cached) => {
@@ -107,7 +86,6 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Google Fonts: stale-while-revalidate
   if (isFont(url)) {
     event.respondWith(
       caches.match(req).then((cached) => {
@@ -124,7 +102,6 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Aset lokal lain: cache-first
   event.respondWith(
     caches.match(req).then((cached) => {
       if (cached) return cached;
