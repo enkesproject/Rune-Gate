@@ -289,12 +289,12 @@ h1 em{font-style:normal; color:var(--amber)}
 
   <div class="screen" id="scr-lose">
     <div class="panel">
-      <div class="kicker bad">GAME OVER</div>
+      <div class="kicker bad">DEFEAT</div>
       <h2>YOUR CITADEL HAS FALLEN</h2>
       <div class="stat-row" id="l-stats"></div>
-      <p class="note">War power <b id="l-str">—</b> was not enough. The watch begins anew — every rune resets, and your defense starts again from <b>Rune 1</b>.</p>
+      <p class="note">War power <b id="l-str">—</b> was not enough — but your progress is safe. Replay this rune, chase bigger chains, or double your power before marching again.</p>
       <div class="btnrow">
-        <button class="btn" id="btn-retry">Begin Again — Rune 1</button>
+        <button class="btn" id="btn-retry">Replay This Rune</button>
         <button class="btn ghost" id="btn-menu">Main Menu</button>
       </div>
     </div>
@@ -821,7 +821,7 @@ function makesMatchAt(g,r,c){
   for(let i=c-1;i>=0&&g[r][i].color===col;i--)n++;
   for(let i=c+1;i<PUZ.cols&&g[r][i].color===col;i++)n++;
   if(n>=3)return true; n=1;
-  for(let i=r-1;i>=0&&g[i][c].color===col;i++)n++;
+  for(let i=r-1;i>=0&&g[i][c].color===col;i--)n++;
   for(let i=r+1;i<PUZ.rows&&g[i][c].color===col;i++)n++;
   return n>=3;
 }
@@ -2178,7 +2178,7 @@ function finish(res){
     startCollapse('e');
   }else{
     if(!playFile('defeat',W/2,.9))sfx('lose');
-    announce('GAME OVER',true,2.2);
+    announce('DEFEAT',true,2.2);
     spawnBurst(BAT.fx,W/2,g.pGateY-10,'#E2A63D',36,1.6);
     startCollapse('p');
   }
@@ -2200,14 +2200,16 @@ function endBattle(){
       show('scr-win');
     }
   }else{
-    const endedAt=plan.lv, pow=plan.strength,
+    /* Kalah: progres TIDAK direset — pemain tetap di level ini */
+    const pow=plan.strength,
           eLeft=Math.max(1,Math.round(BAT.eBase.hp/BAT.maxHp*100));
-    save={level:1,total:0}; persist();
+    persist();
     $('#l-stats').innerHTML=
-      '<span>Run ended at Rune <b>'+endedAt+'</b></span>'+
+      '<span>You fell at Rune <b>'+plan.lv+'</b></span>'+
       '<span>Enemy keep left standing <b>'+eLeft+'%</b></span>'+
-      '<span>Final war power <b>'+pow+'%</b></span>';
+      '<span>War power <b>'+pow+'%</b></span>';
     $('#l-str').textContent=pow+'%';
+    $('#btn-retry').textContent='Replay Rune '+plan.lv;
     show('scr-lose');
   }
 }
