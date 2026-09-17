@@ -4,7 +4,7 @@ const PRECACHE = [
   './',
   './index.html',
   './manifest.json',
-  './icon.jpg'
+  './icon.png'
 ];
 
 const AUDIO_URLS = [
